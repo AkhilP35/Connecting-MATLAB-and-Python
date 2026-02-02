@@ -9,7 +9,7 @@ print("MATLAB started")
 eng.addpath("/Users/akhilpatel/Desktop/Dissertation/WFSim-master")
 print("Path added")
 
-yaw_angles = 20
+yaw_angles = 20 #can change to whatever you like
 #yaw_angles = matlab.double(yaw_angles)
 #eng.workspace['yaw_angles'] = matlab.double(yaw_angles)
 #eng.turbInputSet.phi = matlab.double(yaw_angles)
