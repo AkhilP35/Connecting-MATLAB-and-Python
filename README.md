@@ -3,4 +3,6 @@ My edited version of WFSim which allows you to set different turbine angles (phi
 
 Didn't realise but WFSim_withpower is a bit invalid as power is calculated in sol.turbine.power which i didnt realise until now :(
 
+Have updated WFSim_simulation_use which has some extra features now aswell
+
 WFSIM: https://github.com/TUDelft-DataDrivenControl/WFSim
