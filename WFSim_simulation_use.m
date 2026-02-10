@@ -101,8 +101,16 @@ function total_avg_power = WFSim_simulation_use(yaw_angles)
             'outerposition',[0 0 1 1],'ToolBar','none','visible', 'on');
     end
     
+    NN = 100; % Number of simulations
+    
+    % Pre-allocate the new control input arrays to match the size
+    turbInputSet.phi = zeros(Wp.turbine.N, NN + 1); % can be set to 0 as will be set later
+    turbInputSet.CT_prime = turbInputSet.CT_prime(:, 1:(NN+1));
+    turbInputSet.t = 0:NN;
+    
+    
     % Initialize variables and figure specific to this script (power)
-    powerOutput = zeros(Wp.turbine.N, NN); % Matrix to store power output at each timestep for all turbines
+    %powerOutput = zeros(Wp.turbine.N, NN); % Matrix to store power output at each timestep for all turbines
     
     % Initialising power vs. time graph
     %figure;
@@ -117,6 +125,7 @@ function total_avg_power = WFSim_simulation_use(yaw_angles)
     % Initialising yaw (phi)
     turbInputSet.phi = zeros(Wp.turbine.N, NN+1);
     % Define yaw for each turbine
+    %yaw_angles = 30;
     disp(yaw_angles)
     turbInputSet.phi(1:Wp.turbine.N, :) = yaw_angles;
     
@@ -140,18 +149,18 @@ function total_avg_power = WFSim_simulation_use(yaw_angles)
         sol_array(sol.k) = sol; 
     
         % Calculate power output for each turbine at this timestep
-        for i = 1:Wp.turbine.N
-            % Use upstream velocity at the turbine position
-            turbineVelocity = sol.u(round(Wp.turbine.Crx(i))); 
-            rotorArea = pi * (Wp.turbine.Drotor / 2)^2; % Rotor swept area
-            powerOutput(i, sol.k) = 0.5 * Wp.site.Rho * rotorArea * Wp.turbine.powerscale * turbineVelocity^3; % Power formula
-        end
+        %for i = 1:Wp.turbine.N
+        %    % Use upstream velocity at the turbine position
+        %    turbineVelocity = sol.u(round(Wp.turbine.Crx(i))); 
+        %    rotorArea = pi * (Wp.turbine.Drotor / 2)^2; % Rotor swept area
+        %    powerOutput(i, sol.k) = 0.5 * Wp.site.Rho * rotorArea * Wp.turbine.powerscale * turbineVelocity^3; % Power formula
+        %end
         
        % Print progress, if necessary
         if verboseOptions.printProgress
            disp(['Simulated t(' num2str(sol.k) ') = ' num2str(sol.time) ...
                   ' s. CPU: ' num2str(CPUTime(sol.k)*1e3,3) ' ms.' ...
-                  ' Total Power Output: ' num2str(sum(powerOutput(:, sol.k))) ' W']);
+                  ' Total Power Output: ' num2str(sum(sol.turbine.power)) ' W']);
         end
         
         % Plot animations, if necessary
@@ -170,6 +179,6 @@ function total_avg_power = WFSim_simulation_use(yaw_angles)
     end
     disp(' ')
     disp(['Completed ' num2str(NN) ' forward simulations. Average CPU time: ' num2str(mean(CPUTime)*10^3,3) ' ms.']);
-    disp(['Average Power Output: ' num2str(mean(sum(powerOutput, 1))) ' W']);
-    total_avg_power = num2str(mean(sum(powerOutput, 1)));
+    disp(['Average Power Output: ' num2str(mean(sum(sol.turbine.power))) ' W']);
+    total_avg_power = num2str(mean(sum(sol.turbine.power)));
 end
